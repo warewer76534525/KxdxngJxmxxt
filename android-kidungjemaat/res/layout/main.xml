@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" 
+	android:layout_height="wrap_content" >
+	<ScrollView android:layout_width="fill_parent" 
+		android:id="@+id/svLyric" 
+		android:layout_height="fill_parent" android:layout_above="@+id/relativeLayoutBottom">
+		
+		<LinearLayout
+		    android:orientation="vertical"
+		    android:layout_width="fill_parent"
+		    android:layout_height="fill_parent" >
+			<TextView  
+			    android:layout_width="fill_parent" 
+			    android:layout_height="wrap_content" 
+			    android:id="@+id/txtIsi" android:padding="10dp"/>
+		</LinearLayout>
+	</ScrollView>
+	<RelativeLayout android:layout_height="wrap_content" 
+		android:layout_width="fill_parent" 
+		android:layout_alignParentBottom="true" 
+		android:id="@+id/relativeLayoutBottom">
+		<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/btnPrev" android:text="Previous"></Button>
+		<Button android:layout_height="wrap_content" android:id="@+id/btnNomor" android:layout_toRightOf="@+id/btnPrev" android:layout_toLeftOf="@+id/btnNext" android:layout_width="fill_parent"></Button>
+		<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/btnNext" android:text="Next" android:layout_alignParentRight="true"></Button>
+	</RelativeLayout>
+	
+	<LinearLayout android:layout_height="wrap_content" android:id="@+id/linearLayout1" android:layout_width="fill_parent" android:layout_alignParentTop="true" android:orientation="horizontal" android:visibility="invisible">
+		<FrameLayout android:layout_width="wrap_content" android:layout_height="fill_parent" android:id="@+id/frameLayout1">
+			<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/btnPlay" android:text="Play"></Button>
+		</FrameLayout>
+		<FrameLayout android:layout_width="wrap_content" android:layout_height="fill_parent" android:id="@+id/frameLayout2">
+			<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/btnPause" android:text="Pause"></Button>
+		</FrameLayout>
+		<FrameLayout android:layout_width="wrap_content" android:layout_height="fill_parent" android:id="@+id/frameLayout3">
+			<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/btnStop" android:text="Stop"></Button>
+		</FrameLayout>
+	</LinearLayout>
+	
+</RelativeLayout>
+
+
