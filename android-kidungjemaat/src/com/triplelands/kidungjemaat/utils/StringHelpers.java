@@ -4,9 +4,11 @@ import java.util.Vector;
 
 public class StringHelpers {
 
+	private static final int MODE_PREV = 0;
+	private static final int MODE_NEXT = 1;
 	private static String[] abPart = { "030", "031", "037", "050", "095", "146",
-			"168", "174", "222", "229", "240", "248", "250", "287", "303",
-			"311", "312", "365", "369", "466", "473", };
+			"174", "222", "229", "240", "248", "250", "287", "303", "311", "312", 
+			"369", "466", "473", };
 	
 	private static String[] abcPart = {"168", "365"};
 
@@ -139,136 +141,81 @@ public class StringHelpers {
 		return res;
 	}
 	
-	public static String GetPrevSongNumber(String current) {
-		if(current.equals("001")) return null;
-		
+	public static String PrevNumber(String current){
 		String part = current.substring(current.length() - 1);
+		
 		String number = current;
 		if (part.equals("A") || part.equals("B") || part.equals("C")) {
 			number = current.substring(0, current.length() - 1);
 		}
 		
-		String prev = String.valueOf(Integer.parseInt(number) - 1);
-		for(int i = 0; i < abPart.length; i++){
-			if(number.equals(abPart[i])){
-				if(part.equals("B")){
-					prev = number + "A";
-					break;
-				} else {
-					prev = String.valueOf(Integer.parseInt(number) - 1);
-					for(int j = i; j < abPart.length; j++){
-						if(Integer.parseInt(prev) == Integer.parseInt(abPart[j])){
-							prev = abPart[j] + "B";
-							break;
-						}
-					}
-					for(int k = 0; k < abcPart.length; k++){
-						if(Integer.parseInt(prev) == Integer.parseInt(abcPart[k])){
-							prev = abcPart[k] + "C";
-							break;
-						}
-					}
-				}
+		String prev = buildNumberFromRaw(Integer.parseInt(number) - 1, MODE_PREV);
+		if(isABPart(current)){
+			if(part.equals("B")){
+				prev = number + "A";
+			}
+		} else if(isABCPart(current)){
+			if(part.equals("C")){
+				prev = number + "B";
+			} else if(part.equals("B")) {
+				prev = number + "A";
 			}
 		}
-		for(int i = 0; i < abcPart.length; i++){
-			if(number.equals(abcPart[i])){
-				if(part.equals("C")){
-					prev = number + "B";
-					break;
-				} else if (part.equals("B")){
-					prev = number + "A";
-					break;
-				} else {
-					prev = String.valueOf(Integer.parseInt(number) - 1);
-					for(int j = i; j < abPart.length; j++){
-						if(Integer.parseInt(prev) == Integer.parseInt(abPart[j])){
-							prev = abPart[j] + "B";
-							break;
-						}
-					}
-					for(int k = 0; k < abcPart.length; k++){
-						if(Integer.parseInt(prev) == Integer.parseInt(abcPart[k])){
-							prev = abcPart[k] + "C";
-							break;
-						}
-					}
-				}
-			}
-		}
-		
-		if(prev.length() == 1) prev = "00" + prev;
-		else if(prev.length() == 2) prev = "0" + prev;
-		
 		System.out.println("PREV: " + prev);
 		return prev;
 	}
-
-	public static String GetNextSongNumber(String current) {
-		System.out.println("Current: " + current);
-		if(current.equals("478")) return null;
-		
+	
+	public static String NextNumber(String current){
 		String part = current.substring(current.length() - 1);
+		
 		String number = current;
 		if (part.equals("A") || part.equals("B") || part.equals("C")) {
 			number = current.substring(0, current.length() - 1);
 		}
-
-		String next = String.valueOf(Integer.parseInt(number) + 1);
-		System.out.println("nomer next: " + next);
-		for(int i = 0; i < abPart.length; i++){
-			if(number.equals(abPart[i])){
-				if(part.equals("A")){
-					next = number + "B";
-					break;
-				} else {
-					next = String.valueOf(Integer.parseInt(number) + 1);
-					for(int j = i; j < abPart.length; j++){
-						if(Integer.parseInt(next) == Integer.parseInt(abPart[j])){
-							next = abPart[j] + "A";
-							break;
-						}
-					}
-					for(int k = 0; k < abcPart.length; k++){
-						if(Integer.parseInt(next) == Integer.parseInt(abcPart[k])){
-							next = abcPart[k] + "A";
-							break;
-						}
-					}
-				}
+		
+		String next = buildNumberFromRaw(Integer.parseInt(number) + 1, MODE_NEXT);
+		if(isABPart(current)){
+			if(part.equals("A")){
+				next = number + "B";
+			}
+		} else if(isABCPart(current)){
+			if(part.equals("A")){
+				next = number + "B";
+			} else if(part.equals("B")) {
+				next = number + "C";
 			}
 		}
-		for(int i = 0; i < abcPart.length; i++){
-			if(number.equals(abcPart[i])){
-				if(part.equals("A")){
-					next = number + "B";
-					break;
-				} else if (part.equals("B")){
-					next = number + "C";
-					break;
-				} else {
-					next = String.valueOf(Integer.parseInt(number) + 1);
-					for(int j = i; j < abPart.length; j++){
-						if(Integer.parseInt(next) == Integer.parseInt(abPart[j])){
-							next = abPart[j] + "A";
-							break;
-						}
-					}
-					for(int k = 0; k < abcPart.length; k++){
-						if(Integer.parseInt(next) == Integer.parseInt(abcPart[k])){
-							next = abcPart[k] + "A";
-							break;
-						}
-					}
-				}
-			}
-		}
-		
-		if(next.length() == 1) next = "00" + next;
-		else if(next.length() == 2) next = "0" + next;
-		
 		System.out.println("NEXT: " + next);
 		return next;
+	}
+	
+	private static boolean isABPart(String number){
+		for(int i=0; i < abPart.length; i++){
+			if(number.contains(abPart[i])) return true;
+		}
+		return false;
+	}
+	
+	private static boolean isABCPart(String number){
+		for(int i=0; i < abcPart.length; i++){
+			if(number.contains(abcPart[i])) return true;
+		}
+		return false;
+	}
+	
+	private static String buildNumberFromRaw(int raw, int mode){
+		String partAB = (mode == MODE_PREV) ? "B" : "A";
+		String partAC = (mode == MODE_PREV) ? "C" : "A";
+		for(int i=0; i < abPart.length; i++){
+			if(Integer.parseInt(abPart[i]) == raw) return abPart[i] + partAB;
+		}
+		for(int i=0; i < abcPart.length; i++){
+			if(Integer.parseInt(abcPart[i]) == raw) return abcPart[i] + partAC;
+		}
+		
+		if(("" + raw).length() == 1) return "00" + raw;
+		else if (("" + raw).length() == 2) return "0" + raw;
+		else return "" + raw;
 	}
 
 }

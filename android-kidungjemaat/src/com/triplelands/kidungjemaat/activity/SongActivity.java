@@ -5,7 +5,6 @@ import java.io.File;
 import roboguice.activity.RoboActivity;
 import roboguice.inject.InjectView;
 import android.content.SharedPreferences;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -65,8 +64,8 @@ public class SongActivity extends RoboActivity {
     private class ButtonClickListener implements OnClickListener {
 		public void onClick(View v) {
 			if(v == btnPrev){
-				if(StringHelpers.GetPrevSongNumber(songNumber) != null){
-					String prevNo = StringHelpers.GetPrevSongNumber(songNumber);
+				if(StringHelpers.PrevNumber(songNumber) != null){
+					String prevNo = StringHelpers.PrevNumber(songNumber);
 					mp.stop();
 					playerLayout.setVisibility(View.INVISIBLE);
 					showLyric(prevNo);
@@ -75,8 +74,8 @@ public class SongActivity extends RoboActivity {
 					btnNomor.setText("KJ - No." + prevNo);
 				}
 			} else if(v == btnNext){
-				if(StringHelpers.GetNextSongNumber(songNumber) != null){
-					String nextNo = StringHelpers.GetNextSongNumber(songNumber);
+				if(StringHelpers.NextNumber(songNumber) != null){
+					String nextNo = StringHelpers.NextNumber(songNumber);
 					mp.stop();
 					playerLayout.setVisibility(View.INVISIBLE);
 					showLyric(nextNo);
@@ -101,6 +100,7 @@ public class SongActivity extends RoboActivity {
     
     private void updateNumber(String nomor){
     	System.out.println("parameter update: " + nomor);
+    	songNumber = nomor;
     	SharedPreferences.Editor editor = appPreference.edit();
         editor.putString("nomor_lagu", nomor);
         editor.commit();

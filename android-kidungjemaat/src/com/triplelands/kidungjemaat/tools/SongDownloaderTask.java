@@ -17,11 +17,9 @@ public class SongDownloaderTask extends AsyncTask<Void, String, Void> implements
 
 	private InternetHttpConnection internetConnection;
 	private String url;
-	private Context context;
 	private Handler handler;
 	
 	public SongDownloaderTask(Context ctx, Handler handler, String url) {
-		context = ctx;
 		this.url = url;
 		this.handler = handler;
 		internetConnection = new InternetHttpConnection(this);

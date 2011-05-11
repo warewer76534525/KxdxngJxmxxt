@@ -3,7 +3,7 @@ package com.triplelands.kidungjemaat.model;
 import java.util.List;
 
 public class Lagu {
-	private int no;
+	private String no;
 	private int jumlahAyat;
 	private String judul;
 	private List<String> listAyat;
@@ -11,7 +11,7 @@ public class Lagu {
 	public Lagu() {
 	}
 
-	public int getNo() {
+	public String getNo() {
 		return no;
 	}
 
