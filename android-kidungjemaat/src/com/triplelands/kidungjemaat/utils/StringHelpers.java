@@ -4,100 +4,14 @@ import java.util.Vector;
 
 public class StringHelpers {
 
-	private static final int MODE_PREV = 0;
-	private static final int MODE_NEXT = 1;
+	public static final int MODE_PREV = 0;
+	public static final int MODE_NEXT = 1;
+	public static final int MODE_NORMAL = 2;
 	private static String[] abPart = { "030", "031", "037", "050", "095", "146",
 			"174", "222", "229", "240", "248", "250", "287", "303", "311", "312", 
 			"369", "466", "473", };
 	
 	private static String[] abcPart = {"168", "365"};
-
-	public static String urlSymbolEncode(String s) {
-		StringBuffer sb = new StringBuffer();
-
-		for (int i = 0; i < s.length(); i++)
-			switch (s.charAt(i)) {
-			case ' ':
-				sb.append("%20");
-				break;
-			case '+':
-				sb.append("%2b");
-				break;
-			case '\'':
-				sb.append("%27");
-				break;
-			case '<':
-				sb.append("%3c");
-				break;
-			case '>':
-				sb.append("%3e");
-				break;
-			case '#':
-				sb.append("%23");
-				break;
-			case '%':
-				sb.append("%25");
-				break;
-			case '{':
-				sb.append("%7b");
-				break;
-			case '}':
-				sb.append("%7d");
-				break;
-			case '\\':
-				sb.append("%5c");
-				break;
-			case '^':
-				sb.append("%5e");
-				break;
-			case '~':
-				sb.append("%73");
-				break;
-			case '[':
-				sb.append("%5b");
-				break;
-			case ']':
-				sb.append("%5d");
-				break;
-			default:
-				sb.append(s.charAt(i));
-				break;
-			}
-		return sb.toString();
-	}
-
-	public static String urlEncode(String sUrl) {
-		StringBuffer urlOK = new StringBuffer();
-
-		for (int i = 0; i < sUrl.length(); i++) {
-			char ch = sUrl.charAt(i);
-
-			switch (ch) {
-			case '<':
-				urlOK.append("%3C");
-				break;
-			case '>':
-				urlOK.append("%3E");
-				break;
-			case '/':
-				urlOK.append("%2F");
-				break;
-			case ' ':
-				urlOK.append("%20");
-				break;
-			case ':':
-				urlOK.append("%3A");
-				break;
-			case '-':
-				urlOK.append("%2D");
-				break;
-			default:
-				urlOK.append(ch);
-				break;
-			}
-		}
-		return urlOK.toString();
-	}
 
 	public static boolean isValidPhoneNumber(String num) {
 		if (num.length() >= 8) {
@@ -149,7 +63,7 @@ public class StringHelpers {
 			number = current.substring(0, current.length() - 1);
 		}
 		
-		String prev = buildNumberFromRaw(Integer.parseInt(number) - 1, MODE_PREV);
+		String prev = BuildNumberFromRaw(Integer.parseInt(number) - 1, MODE_PREV);
 		if(isABPart(current)){
 			if(part.equals("B")){
 				prev = number + "A";
@@ -173,7 +87,7 @@ public class StringHelpers {
 			number = current.substring(0, current.length() - 1);
 		}
 		
-		String next = buildNumberFromRaw(Integer.parseInt(number) + 1, MODE_NEXT);
+		String next = BuildNumberFromRaw(Integer.parseInt(number) + 1, MODE_NEXT);
 		if(isABPart(current)){
 			if(part.equals("A")){
 				next = number + "B";
@@ -203,7 +117,7 @@ public class StringHelpers {
 		return false;
 	}
 	
-	private static String buildNumberFromRaw(int raw, int mode){
+	public static String BuildNumberFromRaw(int raw, int mode){
 		String partAB = (mode == MODE_PREV) ? "B" : "A";
 		String partAC = (mode == MODE_PREV) ? "C" : "A";
 		for(int i=0; i < abPart.length; i++){

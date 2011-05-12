@@ -16,6 +16,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.triplelands.kidungjemaat.R;
 import com.triplelands.kidungjemaat.model.Lagu;
@@ -84,7 +85,7 @@ public class SongActivity extends RoboActivity {
 					btnNomor.setText("KJ - No." + nextNo);
 				}
 			} else if(v == btnNomor){
-				
+				initGoToDialog();
 			} else if(v == btnPlay){
 				if(mp.isStopped()){
 					mp.prepareMediaPlayer(musicPath + getCompleteNumber() + ".mid");
@@ -99,24 +100,28 @@ public class SongActivity extends RoboActivity {
     }
     
     private void updateNumber(String nomor){
-    	System.out.println("parameter update: " + nomor);
     	songNumber = nomor;
     	SharedPreferences.Editor editor = appPreference.edit();
         editor.putString("nomor_lagu", nomor);
         editor.commit();
-        System.out.println("setelah update: " + songNumber);
     }
     
-    private void showLyric(String num){
+    private boolean showLyric(String num){
     	Lagu lagu = LyricLoader.GetLagu(this, num);
-		txtIsi.setText(Html.fromHtml("<B>" + lagu.getJudul() + "</B>"));
-		txtIsi.append("\n\n");
-		int no = 1;
-		for (String ayat : lagu.getListAyat()) {
-			txtIsi.append(no + ". " + ayat);
-			txtIsi.append("\n");
-			no++;
-		}
+    	if(lagu == null){
+    		Toast.makeText(this, "Nomor Kidung Jemaat tidak valid.", Toast.LENGTH_SHORT).show();
+    		return false;
+    	} else {
+    		txtIsi.setText(Html.fromHtml("<B>" + lagu.getJudul() + "</B>"));
+    		txtIsi.append("\n\n");
+    		int no = 1;
+    		for (String ayat : lagu.getListAyat()) {
+    			txtIsi.append(no + ". " + ayat);
+    			txtIsi.append("\n");
+    			no++;
+    		}
+    		return true;
+    	}
     }
     
     private void startDownloadSong(){
@@ -128,13 +133,12 @@ public class SongActivity extends RoboActivity {
     	new SongDownloaderTask(this, handler, "http://202.51.96.30/index.php/kj/get/" + getCompleteNumber()).execute();
     }
     
-    private void loadSong(){
+    public void loadSong(){
     	File songDir = new File(musicPath);
     	songDir.mkdirs();
     	File fileSong = new File(songDir, getCompleteNumber() + ".mid");
     	if(fileSong.isFile()){
     		playerLayout.setVisibility(View.VISIBLE);
-//    		mp.prepareMediaPlayer(fileSong.getAbsolutePath());
     	} else {
     		startDownloadSong();
     	}
@@ -147,4 +151,22 @@ public class SongActivity extends RoboActivity {
 		else nomorLagu = "" + songNumber;
 		return nomorLagu;
     }
+    
+    private void initGoToDialog() {
+		Handler handler = new Handler(){
+			public void handleMessage(Message msg) {
+				String goToNum = msg.getData().getString("number");
+				
+				if(showLyric(goToNum)){
+					mp.stop();
+					playerLayout.setVisibility(View.INVISIBLE);
+					updateNumber(goToNum);
+					loadSong();
+					btnNomor.setText("KJ - No." + goToNum);
+				}
+			}
+		};
+		
+		new NumberDialog(this, handler).show();
+	}
 }
