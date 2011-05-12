@@ -11,9 +11,13 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.text.Html;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,18 +31,19 @@ import com.triplelands.kidungjemaat.utils.StringHelpers;
 
 public class SongActivity extends RoboActivity {
 	@InjectView(R.id.txtIsi) private TextView txtIsi;
-	@InjectView(R.id.btnPrev) private Button btnPrev;
-	@InjectView(R.id.btnNext) private Button btnNext;
+	@InjectView(R.id.btnPrev) private ImageButton btnPrev;
+	@InjectView(R.id.btnNext) private ImageButton btnNext;
 	@InjectView(R.id.btnNomor) private Button btnNomor;
     @InjectView(R.id.linearLayout1) private LinearLayout playerLayout;
-    @InjectView(R.id.btnPlay) private Button btnPlay;
-	@InjectView(R.id.btnPause) private Button btnPause;
-	@InjectView(R.id.btnStop) private Button btnStop;
+    @InjectView(R.id.btnPlay) private ImageButton btnPlay;
+	@InjectView(R.id.btnPause) private ImageButton btnPause;
+	@InjectView(R.id.btnStop) private ImageButton btnStop;
+	@InjectView(R.id.txtStatus) private TextView txtStatus;
     
 	private String songNumber;
 	private SharedPreferences appPreference;
 	private MusicPlayer mp;
-	private String musicPath = Environment.getExternalStorageDirectory() + "/kidungjemaat/files/";
+	private String musicPath = Environment.getExternalStorageDirectory() + "/.kidungjemaat/songfiles/";
 	
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,10 +96,17 @@ public class SongActivity extends RoboActivity {
 					mp.prepareMediaPlayer(musicPath + getCompleteNumber() + ".mid");
 				}
 				mp.play();
+				btnPlay.setBackgroundResource(R.drawable.button_yellow);
+				btnPause.setBackgroundResource(R.drawable.button_teal);
 			} else if(v == btnPause){
 				mp.pause();
+				btnPlay.setBackgroundResource(R.drawable.button_teal);
+				if(!mp.isStopped())
+					btnPause.setBackgroundResource(R.drawable.button_yellow);
 			} else if(v == btnStop){
 				mp.stop();
+				btnPlay.setBackgroundResource(R.drawable.button_teal);
+				btnPause.setBackgroundResource(R.drawable.button_teal);
 			}
 		}
     }
@@ -127,7 +139,12 @@ public class SongActivity extends RoboActivity {
     private void startDownloadSong(){
 		Handler handler = new Handler() {
 			public void handleMessage(Message msg) {
-				loadSong();
+				String error = msg.getData().getString("error");
+				if(error.equals("error")){
+					setStatus("Gagal mengunduh lagu.");
+				} else {
+					loadSong();
+				}
 			}
 		};
     	new SongDownloaderTask(this, handler, "http://202.51.96.30/index.php/kj/get/" + getCompleteNumber()).execute();
@@ -138,8 +155,10 @@ public class SongActivity extends RoboActivity {
     	songDir.mkdirs();
     	File fileSong = new File(songDir, getCompleteNumber() + ".mid");
     	if(fileSong.isFile()){
+    		hideStatus();
     		playerLayout.setVisibility(View.VISIBLE);
     	} else {
+    		setStatus("Mengunduh lagu...");
     		startDownloadSong();
     	}
     }
@@ -169,4 +188,28 @@ public class SongActivity extends RoboActivity {
 		
 		new NumberDialog(this, handler).show();
 	}
+    
+    private void setStatus(String message){
+    	txtStatus.setVisibility(View.VISIBLE);
+    	txtStatus.setText(message);
+    }
+    
+    private void hideStatus(){
+    	txtStatus.setVisibility(View.GONE);
+    }
+    
+    public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.menu, menu);
+	    return true;
+	}
+    
+    public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case R.id.aboutMenu:
+				new AboutUsDialog(this).show();
+				break;
+		}
+		return true;
+    }
 }

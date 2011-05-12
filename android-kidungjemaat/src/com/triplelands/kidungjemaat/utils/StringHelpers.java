@@ -56,6 +56,8 @@ public class StringHelpers {
 	}
 	
 	public static String PrevNumber(String current){
+		if(current.equals("001")) return null;
+		
 		String part = current.substring(current.length() - 1);
 		
 		String number = current;
@@ -80,6 +82,8 @@ public class StringHelpers {
 	}
 	
 	public static String NextNumber(String current){
+		if(current.equals("478")) return null;
+		
 		String part = current.substring(current.length() - 1);
 		
 		String number = current;

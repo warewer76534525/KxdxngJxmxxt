@@ -6,6 +6,7 @@ import java.io.InputStream;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
@@ -35,7 +36,7 @@ public class SongDownloaderTask extends AsyncTask<Void, String, Void> implements
 		String exploded[] = StringHelpers.explode('/', url);
 		String name = exploded[exploded.length - 1];
 		
-		File songDir = new File(Environment.getExternalStorageDirectory() + "/kidungjemaat/files/");
+		File songDir = new File(Environment.getExternalStorageDirectory() + "/.kidungjemaat/songfiles/");
 		songDir.mkdirs();
 		
 		
@@ -60,14 +61,13 @@ public class SongDownloaderTask extends AsyncTask<Void, String, Void> implements
 	        } else {
 	        	/* download selesai */
 	        	if(fileSong.isFile()){
-	        		System.out.println("selesai!");
+	        		System.out.println("complete download");
 	        		Message msg = handler.obtainMessage();
 	        		handler.sendMessage(msg);
 	        	}
 	        }
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			sendErrorMessage();
 		}
 	}
 	
@@ -82,22 +82,31 @@ public class SongDownloaderTask extends AsyncTask<Void, String, Void> implements
 
 	@Override
 	public void onConnectionError(Exception ex) {
-		ex.printStackTrace();
+		sendErrorMessage();
 	}
 
 	@Override
 	public void onConnectionResponseNotOk() {
-		
+		sendErrorMessage();
 	}
 
 	@Override
 	public void onConnectionTimeout() {
-		
+		System.out.println("timeout kirim pesan");
+		sendErrorMessage();
 	}
 
 	@Override
 	public void onCancelledConnection() {
-		
+		sendErrorMessage();
+	}
+	
+	private void sendErrorMessage(){
+		Message msg = handler.obtainMessage();
+		Bundle b = new Bundle();
+		b.putString("error", "error");
+		msg.setData(b);
+		handler.sendMessage(msg);
 	}
 
 }

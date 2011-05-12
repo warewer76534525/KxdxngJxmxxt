@@ -2,6 +2,7 @@ package com.triplelands.kidungjemaat.tools;
 
 import java.io.IOException;
 
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnBufferingUpdateListener;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -21,7 +22,8 @@ public class MusicPlayer implements OnErrorListener, OnBufferingUpdateListener, 
 		mp.setOnBufferingUpdateListener(this);
 		mp.setOnCompletionListener(this);
 		mp.setOnPreparedListener(this);
-		mp.setAudioStreamType(2);
+		mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+		mp.setLooping(true);
 		stopped = true;
 	}
 	
