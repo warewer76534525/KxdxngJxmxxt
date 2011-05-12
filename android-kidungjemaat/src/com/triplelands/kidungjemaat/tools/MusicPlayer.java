@@ -96,6 +96,8 @@ public class MusicPlayer implements OnErrorListener, OnBufferingUpdateListener, 
 
 	@Override
 	public void onCompletion(MediaPlayer mp) {
+		stop();
+		play();
 	}
 
 	@Override

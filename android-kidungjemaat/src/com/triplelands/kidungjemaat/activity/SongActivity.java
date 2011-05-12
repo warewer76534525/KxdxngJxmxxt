@@ -140,14 +140,14 @@ public class SongActivity extends RoboActivity {
 		Handler handler = new Handler() {
 			public void handleMessage(Message msg) {
 				String error = msg.getData().getString("error");
-				if(error.equals("error")){
+				if(error != null && error.equals("error")){
 					setStatus("Gagal mengunduh lagu.");
 				} else {
 					loadSong();
 				}
 			}
 		};
-    	new SongDownloaderTask(this, handler, "http://202.51.96.30/index.php/kj/get/" + getCompleteNumber()).execute();
+    	new SongDownloaderTask(this, handler, "http://www.kj.triplelands.com/index.php/kj/get/" + getCompleteNumber()).execute();
     }
     
     public void loadSong(){
