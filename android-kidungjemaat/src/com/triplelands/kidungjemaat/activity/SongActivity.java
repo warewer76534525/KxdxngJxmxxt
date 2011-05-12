@@ -65,6 +65,13 @@ public class SongActivity extends RoboActivity {
         btnPlay.setOnClickListener(new ButtonClickListener());
         btnPause.setOnClickListener(new ButtonClickListener());
         btnStop.setOnClickListener(new ButtonClickListener());
+        
+        if(mp.isPlaying() && !mp.isPaused()){
+			btnPlay.setBackgroundResource(R.drawable.button_yellow);
+        }
+        if(mp.isPaused()){
+        	btnPause.setBackgroundResource(R.drawable.button_yellow);
+        }
     }
     
     private class ButtonClickListener implements OnClickListener {
@@ -73,6 +80,8 @@ public class SongActivity extends RoboActivity {
 				if(StringHelpers.PrevNumber(songNumber) != null){
 					String prevNo = StringHelpers.PrevNumber(songNumber);
 					mp.stop();
+					btnPlay.setBackgroundResource(R.drawable.button_teal);
+					btnPause.setBackgroundResource(R.drawable.button_teal);
 					playerLayout.setVisibility(View.INVISIBLE);
 					showLyric(prevNo);
 					updateNumber(prevNo);
@@ -83,6 +92,8 @@ public class SongActivity extends RoboActivity {
 				if(StringHelpers.NextNumber(songNumber) != null){
 					String nextNo = StringHelpers.NextNumber(songNumber);
 					mp.stop();
+					btnPlay.setBackgroundResource(R.drawable.button_teal);
+					btnPause.setBackgroundResource(R.drawable.button_teal);
 					playerLayout.setVisibility(View.INVISIBLE);
 					showLyric(nextNo);
 					updateNumber(nextNo);

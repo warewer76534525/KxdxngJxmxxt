@@ -14,7 +14,7 @@ public class MusicPlayer implements OnErrorListener, OnBufferingUpdateListener, 
 	private static MusicPlayer instance;
 	private String path;
 	private MediaPlayer mp;
-	private boolean stopped;
+	private boolean stopped, paused;
 	
 	private MusicPlayer() {
 		mp = new MediaPlayer();
@@ -52,6 +52,10 @@ public class MusicPlayer implements OnErrorListener, OnBufferingUpdateListener, 
 		return mp.isPlaying();
 	}
 	
+	public boolean isPaused(){
+		return paused;
+	}
+	
 	public void play(){
 		if(stopped){
 			try {
@@ -68,17 +72,20 @@ public class MusicPlayer implements OnErrorListener, OnBufferingUpdateListener, 
 		}
 		mp.start();
 		stopped = false;
+		paused = false;
 	}
 	
 	public void pause(){
 		if(mp.isPlaying()){
 			mp.pause();
+			paused = true;
 		}
 	}
 	
 	public void stop(){
 		mp.stop();
 		stopped = true;
+		paused = false;
 	}
 	
 	public boolean isStopped(){
