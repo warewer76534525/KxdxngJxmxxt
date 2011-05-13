@@ -4,12 +4,11 @@ import java.io.File;
 
 import roboguice.activity.RoboActivity;
 import roboguice.inject.InjectView;
-import android.content.SharedPreferences;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.preference.PreferenceManager;
 import android.text.Html;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,12 +21,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.inject.Inject;
 import com.triplelands.kidungjemaat.R;
+import com.triplelands.kidungjemaat.app.AppManager;
 import com.triplelands.kidungjemaat.model.Lagu;
 import com.triplelands.kidungjemaat.tools.MusicPlayer;
 import com.triplelands.kidungjemaat.tools.SongDownloaderTask;
-import com.triplelands.kidungjemaat.utils.LyricLoader;
-import com.triplelands.kidungjemaat.utils.StringHelpers;
 
 public class SongActivity extends RoboActivity {
 	@InjectView(R.id.txtIsi) private TextView txtIsi;
@@ -40,23 +39,19 @@ public class SongActivity extends RoboActivity {
 	@InjectView(R.id.btnStop) private ImageButton btnStop;
 	@InjectView(R.id.txtStatus) private TextView txtStatus;
     
-	private String songNumber;
-	private SharedPreferences appPreference;
 	private MusicPlayer mp;
 	private String musicPath = Environment.getExternalStorageDirectory() + "/.kidungjemaat/songfiles/";
+	
+	@Inject
+	private AppManager manager;
 	
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        manager.initSongIndex(this);
         mp = MusicPlayer.GetInstance();
         
-        appPreference =  PreferenceManager.getDefaultSharedPreferences(this);
-        songNumber = appPreference.getString("nomor_lagu", "001");
-        
-        loadSong();
-        
-        showLyric(songNumber);
-        btnNomor.setText("KJ - No." + songNumber);
+        populateView(manager.getCurrentSong());
         
         btnPrev.setOnClickListener(new ButtonClickListener());
         btnNext.setOnClickListener(new ButtonClickListener());
@@ -77,34 +72,26 @@ public class SongActivity extends RoboActivity {
     private class ButtonClickListener implements OnClickListener {
 		public void onClick(View v) {
 			if(v == btnPrev){
-				if(StringHelpers.PrevNumber(songNumber) != null){
-					String prevNo = StringHelpers.PrevNumber(songNumber);
+				Lagu lagu = manager.prev();
+				if(lagu != null) {
+					populateView(lagu);
 					mp.stop();
 					btnPlay.setBackgroundResource(R.drawable.button_teal);
 					btnPause.setBackgroundResource(R.drawable.button_teal);
-					playerLayout.setVisibility(View.INVISIBLE);
-					showLyric(prevNo);
-					updateNumber(prevNo);
-					loadSong();
-					btnNomor.setText("KJ - No." + prevNo);
 				}
 			} else if(v == btnNext){
-				if(StringHelpers.NextNumber(songNumber) != null){
-					String nextNo = StringHelpers.NextNumber(songNumber);
+				Lagu lagu = manager.next();
+				if(lagu != null){
+					populateView(lagu);
 					mp.stop();
 					btnPlay.setBackgroundResource(R.drawable.button_teal);
 					btnPause.setBackgroundResource(R.drawable.button_teal);
-					playerLayout.setVisibility(View.INVISIBLE);
-					showLyric(nextNo);
-					updateNumber(nextNo);
-					loadSong();
-					btnNomor.setText("KJ - No." + nextNo);
 				}
 			} else if(v == btnNomor){
 				initGoToDialog();
 			} else if(v == btnPlay){
 				if(mp.isStopped()){
-					mp.prepareMediaPlayer(musicPath + getCompleteNumber() + ".mid");
+					mp.prepareMediaPlayer(musicPath + manager.getCurrentSong().getFullNumber() + ".mid");
 				}
 				mp.play();
 				btnPlay.setBackgroundResource(R.drawable.button_yellow);
@@ -122,82 +109,72 @@ public class SongActivity extends RoboActivity {
 		}
     }
     
-    private void updateNumber(String nomor){
-    	songNumber = nomor;
-    	SharedPreferences.Editor editor = appPreference.edit();
-        editor.putString("nomor_lagu", nomor);
-        editor.commit();
-    }
+    private void populateView(Lagu lagu) {
+		populateLyric(lagu);
+		populateSong(lagu);
+	}
     
-    private boolean showLyric(String num){
-    	Lagu lagu = LyricLoader.GetLagu(this, num);
-    	if(lagu == null){
-    		Toast.makeText(this, "Nomor Kidung Jemaat tidak valid.", Toast.LENGTH_SHORT).show();
-    		return false;
-    	} else {
-    		txtIsi.setText(Html.fromHtml("<B>" + lagu.getJudul() + "</B>"));
-    		txtIsi.append("\n\n");
-    		int no = 1;
-    		for (String ayat : lagu.getListAyat()) {
-    			txtIsi.append(no + ". " + ayat);
-    			txtIsi.append("\n");
-    			no++;
+    private void populateSong(Lagu lagu) {
+    	playerLayout.setVisibility(View.INVISIBLE);
+    	File songDir = new File(musicPath);
+    	songDir.mkdirs();
+    	File fileSong = new File(songDir, lagu.getFullNumber() + ".mid");
+    	
+    	if(fileSong.isFile()){
+    		System.out.println("length: " + fileSong.length());
+    		if(fileSong.length() > 378){
+    			hideStatus();
+        		playerLayout.setVisibility(View.VISIBLE);
     		}
-    		return true;
+    		
+    	} else {
+    		setStatus("Mengunduh lagu...");
+    		startDownloadSong(lagu);
     	}
-    }
+	}
+
+	private void populateLyric(Lagu lagu) {
+		txtIsi.setText(Html.fromHtml("<B>" + lagu.getFullJudul() + "</B>"));
+		txtIsi.append("\n\n");
+		int no = 1;
+		for (String ayat : lagu.getListAyat()) {
+			txtIsi.append(no + ". " + ayat);
+			txtIsi.append("\n");
+			no++;
+		}
+		btnNomor.setText(lagu.getStringNumber());
+	}
     
-    private void startDownloadSong(){
+    private void startDownloadSong(final Lagu lagu){
 		Handler handler = new Handler() {
 			public void handleMessage(Message msg) {
 				String error = msg.getData().getString("error");
 				if(error != null && error.equals("error")){
 					setStatus("Gagal mengunduh lagu.");
 				} else {
-					loadSong();
+					populateSong(lagu);
 				}
 			}
 		};
-    	new SongDownloaderTask(this, handler, "http://www.kj.triplelands.com/index.php/kj/get/" + getCompleteNumber()).execute();
-    }
-    
-    public void loadSong(){
-    	File songDir = new File(musicPath);
-    	songDir.mkdirs();
-    	File fileSong = new File(songDir, getCompleteNumber() + ".mid");
-    	if(fileSong.isFile()){
-    		hideStatus();
-    		playerLayout.setVisibility(View.VISIBLE);
-    	} else {
-    		setStatus("Mengunduh lagu...");
-    		startDownloadSong();
-    	}
-    }
-    
-    private String getCompleteNumber(){
-    	String nomorLagu;
-		if(String.valueOf(songNumber).length() == 1) nomorLagu = "00" + songNumber;
-		else if(String.valueOf(songNumber).length() == 2) nomorLagu = "0" + songNumber;
-		else nomorLagu = "" + songNumber;
-		return nomorLagu;
+    	new SongDownloaderTask(this, handler, "http://www.kj.triplelands.com/index.php/kj/get/" + lagu.getFullNumber()).execute();
     }
     
     private void initGoToDialog() {
 		Handler handler = new Handler(){
 			public void handleMessage(Message msg) {
-				String goToNum = msg.getData().getString("number");
-				
-				if(showLyric(goToNum)){
+				Lagu lagu = (Lagu)msg.getData().getSerializable("lagu");
+				if(lagu == null){
+					Toast.makeText(SongActivity.this, "Nomor Kidung Jemaat tidak valid.", Toast.LENGTH_SHORT).show();
+				} else {
 					mp.stop();
-					playerLayout.setVisibility(View.INVISIBLE);
-					updateNumber(goToNum);
-					loadSong();
-					btnNomor.setText("KJ - No." + goToNum);
+					btnPlay.setBackgroundResource(R.drawable.button_teal);
+					btnPause.setBackgroundResource(R.drawable.button_teal);
+					populateView(lagu);
 				}
 			}
 		};
 		
-		new NumberDialog(this, handler).show();
+		new NumberDialog(this, handler, manager).show();
 	}
     
     private void setStatus(String message){
@@ -217,10 +194,25 @@ public class SongActivity extends RoboActivity {
     
     public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+			case R.id.listMenu:
+				startActivityForResult(new Intent(this, SongListActivity.class), 0);
+				break;
 			case R.id.aboutMenu:
 				new AboutUsDialog(this).show();
 				break;
 		}
 		return true;
+    }
+    
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    	super.onActivityResult(requestCode, resultCode, data);
+    	if(resultCode == RESULT_OK){
+    		Lagu lagu = manager.goTo(data.getExtras().getString("nomor"));
+    		mp.stop();
+			btnPlay.setBackgroundResource(R.drawable.button_teal);
+			btnPause.setBackgroundResource(R.drawable.button_teal);
+			populateView(lagu);
+    	}
     }
 }

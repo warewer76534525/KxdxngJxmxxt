@@ -9,8 +9,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.google.inject.Inject;
 import com.triplelands.kidungjemaat.R;
-import com.triplelands.kidungjemaat.utils.StringHelpers;
+import com.triplelands.kidungjemaat.app.AppManager;
+import com.triplelands.kidungjemaat.model.Lagu;
 
 public class NumberDialog extends Dialog {
 	
@@ -18,9 +20,14 @@ public class NumberDialog extends Dialog {
 	private EditText txtNumber;
 	private Handler handler;
 	
-	public NumberDialog(Context context, Handler handler) {
+	@Inject
+	private AppManager manager;
+	
+	public NumberDialog(Context context, Handler handler, AppManager manager) {
 		super(context);
 		this.handler = handler;
+		this.manager = manager;
+
 		setTitle("Go To");
 		setContentView(R.layout.dialog);
 		setCancelable(true);
@@ -33,10 +40,11 @@ public class NumberDialog extends Dialog {
 		btnGo.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				if(!txtNumber.getText().toString().equals("")){
-					String number = StringHelpers.BuildNumberFromRaw(Integer.parseInt(txtNumber.getText().toString()), StringHelpers.MODE_NORMAL);
+					System.out.println("input user: " + txtNumber.getText().toString());
+					Lagu lagu = manager.goTo(txtNumber.getText().toString());
 					Message msg = handler.obtainMessage();
 					Bundle bundle = new Bundle();
-					bundle.putString("number", number);
+					bundle.putSerializable("lagu", lagu);
 					msg.setData(bundle);
 					handler.sendMessage(msg);
 				}

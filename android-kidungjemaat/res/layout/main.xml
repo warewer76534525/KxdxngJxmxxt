@@ -34,7 +34,7 @@
 			</FrameLayout>
 		</LinearLayout>
 		<FrameLayout android:layout_height="fill_parent" android:layout_width="wrap_content" android:id="@+id/frameLayout4" android:layout_gravity="center_horizontal">
-			<TextView android:id="@+id/txtStatus" android:textSize="12dp" android:layout_width="wrap_content" android:text="status" android:textColor="#000000" android:layout_height="wrap_content"></TextView>
+			<TextView android:id="@+id/txtStatus" android:textSize="12dp" android:layout_width="wrap_content" android:textColor="#000000" android:layout_height="wrap_content" android:text="Lagu belum tersedia."></TextView>
 		</FrameLayout>
 	
 		<RelativeLayout android:layout_height="wrap_content" 

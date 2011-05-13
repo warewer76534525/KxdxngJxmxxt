@@ -13,16 +13,18 @@ public final class R {
     public static final class drawable {
         public static final int button_teal=0x7f020000;
         public static final int button_yellow=0x7f020001;
-        public static final int icon=0x7f020002;
-        public static final int logos_icon=0x7f020003;
-        public static final int next=0x7f020004;
-        public static final int pause=0x7f020005;
-        public static final int play=0x7f020006;
-        public static final int prev=0x7f020007;
-        public static final int stop=0x7f020008;
+        public static final int divider=0x7f020002;
+        public static final int icon=0x7f020003;
+        public static final int logos_icon=0x7f020004;
+        public static final int next=0x7f020005;
+        public static final int pause=0x7f020006;
+        public static final int play=0x7f020007;
+        public static final int prev=0x7f020008;
+        public static final int stop=0x7f020009;
     }
     public static final class id {
-        public static final int aboutMenu=0x7f06001a;
+        public static final int RelativeLayout01=0x7f06001c;
+        public static final int aboutMenu=0x7f060021;
         public static final int btnGo=0x7f06000a;
         public static final int btnNext=0x7f060019;
         public static final int btnNomor=0x7f060018;
@@ -36,24 +38,32 @@ public final class R {
         public static final int frameLayout3=0x7f060012;
         public static final int frameLayout4=0x7f060014;
         public static final int imageView1=0x7f060001;
+        public static final int layoutSearch=0x7f06001d;
         public static final int linearLayout1=0x7f060000;
         public static final int linearLayout2=0x7f060002;
         public static final int linearLayoutBottom=0x7f06000c;
+        public static final int listMenu=0x7f060020;
+        public static final int listViewLagu=0x7f06001f;
         public static final int relativeLayout1=0x7f060007;
         public static final int relativeLayoutBottom=0x7f060016;
         public static final int svLyric=0x7f06000b;
-        public static final int textView1=0x7f060003;
         public static final int textView2=0x7f060004;
         public static final int textView3=0x7f060005;
         public static final int textView4=0x7f060006;
+        public static final int txtAppName=0x7f060003;
         public static final int txtIsi=0x7f06000d;
+        public static final int txtJudulLagu=0x7f06001b;
+        public static final int txtNoLagu=0x7f06001a;
         public static final int txtNumber=0x7f060008;
+        public static final int txtSearch=0x7f06001e;
         public static final int txtStatus=0x7f060015;
     }
     public static final class layout {
         public static final int about=0x7f030000;
         public static final int dialog=0x7f030001;
         public static final int main=0x7f030002;
+        public static final int song_row_item=0x7f030003;
+        public static final int songlist=0x7f030004;
     }
     public static final class menu {
         public static final int menu=0x7f050000;

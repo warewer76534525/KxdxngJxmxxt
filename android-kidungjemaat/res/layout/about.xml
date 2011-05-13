@@ -2,7 +2,7 @@
     <LinearLayout android:id="@+id/linearLayout1" android:layout_width="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="horizontal" android:layout_height="wrap_content">
         <ImageView android:layout_height="wrap_content" android:id="@+id/imageView1" android:src="@drawable/logos_icon" android:layout_width="wrap_content" android:padding="10dp" android:layout_gravity="center_vertical"></ImageView>
         <LinearLayout android:id="@+id/linearLayout2" android:layout_height="fill_parent" android:layout_width="wrap_content" android:orientation="vertical" android:padding="10dp">
-            <TextView android:id="@+id/textView1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textStyle="bold" android:text="Kidung Jemaat 1.0.0" android:paddingBottom="10dp" android:textColor="#FFFFFF"></TextView>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:textStyle="bold" android:text="Kidung Jemaat 1.0.0" android:paddingBottom="10dp" android:textColor="#FFFFFF" android:id="@+id/txtAppName"></TextView>
             <TextView android:id="@+id/textView2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="TripleLands Team" android:textColor="#FFFFFF"></TextView>
             <TextView android:id="@+id/textView3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="http://www.triplelands.com" android:textColor="#FFFFFF"></TextView>
             <TextView android:id="@+id/textView4" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="triplelands@gmail.com" android:textColor="#FFFFFF"></TextView>

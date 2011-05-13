@@ -1,0 +1,15 @@
+<RelativeLayout android:layout_width="fill_parent"
+	android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/RelativeLayout01" android:background="#DFEAF0">
+	<FrameLayout android:id="@+id/layoutSearch"
+		android:layout_alignParentTop="true" android:layout_height="wrap_content"
+		android:padding="5dp" android:layout_width="fill_parent">
+		<EditText android:layout_height="wrap_content" android:id="@+id/txtSearch"
+			android:layout_width="fill_parent" android:hint="Cari Lagu">
+		</EditText>
+	</FrameLayout>
+	<ListView android:layout_height="wrap_content" android:id="@+id/listViewLagu"
+		android:layout_width="fill_parent" android:layout_below="@id/layoutSearch"
+		android:background="#00000000" android:cacheColorHint="#00000000" android:divider="@drawable/divider">
+	</ListView>
+</RelativeLayout>

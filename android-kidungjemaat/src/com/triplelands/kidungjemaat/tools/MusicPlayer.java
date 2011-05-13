@@ -70,6 +70,7 @@ public class MusicPlayer implements OnErrorListener, OnBufferingUpdateListener, 
 				e.printStackTrace();
 			}
 		}
+		
 		mp.start();
 		stopped = false;
 		paused = false;
