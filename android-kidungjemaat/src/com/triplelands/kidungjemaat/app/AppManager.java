@@ -1,8 +1,5 @@
 package com.triplelands.kidungjemaat.app;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.List;
 
@@ -21,9 +18,10 @@ import com.triplelands.kidungjemaat.utils.JsonUtils;
 @Singleton
 public class AppManager {
 	
-	private List<IndexLagu> listIndexLagu;
+	private List<IndexLagu> listIndexKJ, listIndexPKJ, listIndexNKB;
 	private SharedPreferences appPreference;
-	private int currentIndex;
+	private int currentIndexKJ, currentIndexPKJ, currentIndexNKB;
+	private int currentJenis, latestJenis;
 	
 	@Inject
 	private Context context;
@@ -34,94 +32,154 @@ public class AppManager {
 	public void initSongIndex(Context context) {
 		if(appPreference == null){
 			appPreference =  PreferenceManager.getDefaultSharedPreferences(context);
-			currentIndex = appPreference.getInt("index_song", 0);
+			currentIndexKJ = appPreference.getInt("KJ_index", 0);
+			currentIndexPKJ = appPreference.getInt("PKJ_index", 0);
+			currentIndexNKB = appPreference.getInt("NKB_index", 0);
+			currentJenis = appPreference.getInt("current_jenis", Lagu.KJ);
 		}
-		if(listIndexLagu == null){
+		if(listIndexKJ == null){
 			Type listType = new TypeToken<List<IndexLagu>>(){}.getType();
-			listIndexLagu = JsonUtils.toListObject2(readFile(context, "KJINDEX"), listType);
+			listIndexKJ = JsonUtils.toListObject2(FileLoader.readFile(context, "KJINDEX"), listType);
+		}
+		if(listIndexPKJ == null){
+			Type listType = new TypeToken<List<IndexLagu>>(){}.getType();
+			listIndexPKJ = JsonUtils.toListObject2(FileLoader.readFile(context, "PKJINDEX"), listType);
+		}
+		if(listIndexNKB == null){
+			Type listType = new TypeToken<List<IndexLagu>>(){}.getType();
+			listIndexNKB = JsonUtils.toListObject2(FileLoader.readFile(context, "NKBINDEX"), listType);
 		}
 	}
 	
-	public List<IndexLagu> getListIndexLagu(){
-		return listIndexLagu;
+	public List<IndexLagu> getListIndexKJ(){
+		return listIndexKJ;
 	}
 	
-	private String readFile(Context ctx, String fileName){
-		BufferedReader in = null;
-		try {
-			in = new BufferedReader(new InputStreamReader(ctx.getAssets().open(fileName)));
-
-			String line;
-			StringBuilder sb = new StringBuilder();
-
-			while ((line = in.readLine()) != null) {
-				sb.append(line);
-			}
-			return sb.toString();
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}
+	public List<IndexLagu> getListIndexPKJ(){
+		return listIndexPKJ;
+	}
+	
+	public List<IndexLagu> getListIndexNKB(){
+		return listIndexNKB;
 	}
 	
 	public Lagu getCurrentSong(){
-		System.out.println("current number: " + currentIndex);
+		System.out.println("current number: " + currentIndexKJ);
 		IndexLagu index = getCurrentIndexLagu();
-		return FileLoader.GetLagu(context, Lagu.getFullNumber(index.getNo()));
+		return FileLoader.GetLagu(context, currentJenis, Lagu.getFullNumber(index.getNo()));
 	}
 	
 	public Lagu next(){
 		if(!isLastSong()){
-			IndexLagu nextIndex = listIndexLagu.get(currentIndex + 1);
+			IndexLagu nextIndex = getCurrentIndexList().get(getCurrentIndex() + 1);
 			String nextNumber = nextIndex.getNo();
 			System.out.println("next Number: " + nextNumber);
-			setCurrentIndex(currentIndex + 1);
-			return FileLoader.GetLagu(context, Lagu.getFullNumber(nextNumber));
+			setCurrentIndex(getCurrentIndex() + 1);
+			return FileLoader.GetLagu(context, currentJenis, Lagu.getFullNumber(nextNumber));
 		}
 		return null;
 	}
 	
 	public Lagu prev(){
 		if(!isFirstSong()){
-			IndexLagu prevIndex = listIndexLagu.get(currentIndex - 1);
+			IndexLagu prevIndex = getCurrentIndexList().get(getCurrentIndex() - 1);
 			String prevNumber = prevIndex.getNo();
-			setCurrentIndex(currentIndex - 1);
-			return FileLoader.GetLagu(context, Lagu.getFullNumber(prevNumber));
+			setCurrentIndex(getCurrentIndex() - 1);
+			return FileLoader.GetLagu(context, currentJenis, Lagu.getFullNumber(prevNumber));
 		}
 		return null;
 	}
 	
 	private IndexLagu getCurrentIndexLagu(){
-		return listIndexLagu.get(currentIndex);
+		System.out.println("INDEX CURRENT: " + getCurrentIndex());
+		return getCurrentIndexList().get(getCurrentIndex());
 	}
 
 	public boolean isFirstSong() {
-		return currentIndex == 0;
+		return getCurrentIndex() == 0;
 	}
 
 	public boolean isLastSong() {
-		return currentIndex == listIndexLagu.size() - 1;
+		return getCurrentIndex() == getCurrentIndexList().size() - 1;
 	}
 
 	public Lagu goTo(String number) {
 		String goToNumber = number;
-		int index = currentIndex;
-		for (IndexLagu indexLagu : listIndexLagu) {
+		List<IndexLagu> listGoTo = getCurrentIndexList();
+		
+		int indexToGo = 0;
+		for (IndexLagu indexLagu : listGoTo) {
 			if(indexLagu.getNo().startsWith(number)){
 				goToNumber = indexLagu.getNo();
-				index = listIndexLagu.indexOf(indexLagu);
+				indexToGo = getCurrentIndexList().indexOf(indexLagu);
 				break;
 			}
 		}
-
-		setCurrentIndex(index);
-		return FileLoader.GetLagu(context, Lagu.getFullNumber(goToNumber));
+		System.out.println("INDEX TO GO:" + indexToGo);
+		setCurrentIndex(indexToGo);
+		return FileLoader.GetLagu(context, currentJenis, Lagu.getFullNumber(goToNumber));
+	}
+	
+	private void setCurrentIndexKJ(int index){
+		currentIndexKJ = index;
+    	SharedPreferences.Editor editor = appPreference.edit();
+        editor.putInt("KJ_index", index);
+        editor.commit();
+	}
+	
+	private void setCurrentIndexPKJ(int index){
+		System.out.println("current PKJ index: " + index);
+		currentIndexPKJ = index;
+    	SharedPreferences.Editor editor = appPreference.edit();
+        editor.putInt("PKJ_index", index);
+        editor.commit();
+	}
+	
+	private void setCurrentIndexNKB(int index){
+		currentIndexNKB = index;
+    	SharedPreferences.Editor editor = appPreference.edit();
+        editor.putInt("NKB_index", index);
+        editor.commit();
+	}
+	
+	public void setCurrentJenis(int index){
+		latestJenis = currentJenis;
+		currentJenis = index;
+    	SharedPreferences.Editor editor = appPreference.edit();
+        editor.putInt("current_jenis", index);
+        editor.commit();
+	}
+	
+	public int getCurrentJenis(){
+		return currentJenis;
+	}
+	
+	public void rollBackJenis(){
+		currentJenis = latestJenis;
+    	SharedPreferences.Editor editor = appPreference.edit();
+        editor.putInt("current_jenis", latestJenis);
+        editor.commit();
+	}
+	
+	private List<IndexLagu> getCurrentIndexList(){
+		List<IndexLagu> listCurrent;
+		System.out.println("CURRENT JENIS: " + currentJenis);
+		if(currentJenis == Lagu.KJ) listCurrent = listIndexKJ;
+		else if(currentJenis == Lagu.PKJ) listCurrent = listIndexPKJ;
+		else listCurrent = listIndexNKB;
+		return listCurrent;	
 	}
 	
 	private void setCurrentIndex(int index){
-		currentIndex = index;
-    	SharedPreferences.Editor editor = appPreference.edit();
-        editor.putInt("index_song", index);
-        editor.commit();
+		System.out.println("SET CURRENT INDEX: " + index);
+		if(currentJenis == Lagu.KJ) setCurrentIndexKJ(index);
+		else if(currentJenis == Lagu.PKJ) setCurrentIndexPKJ(index);
+		else setCurrentIndexNKB(index);
+	}
+	
+	private int getCurrentIndex(){
+		if(currentJenis == Lagu.KJ) return currentIndexKJ;
+		else if(currentJenis == Lagu.PKJ) return currentIndexPKJ;
+		else return currentIndexNKB;
 	}
 }

@@ -7,11 +7,12 @@ import java.io.InputStream;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import com.triplelands.kidungjemaat.app.AppManager;
+import com.triplelands.kidungjemaat.model.Lagu;
 import com.triplelands.kidungjemaat.utils.StringHelpers;
 
 public class SongDownloaderTask extends AsyncTask<Void, String, Void> implements InternetConnectionListener{
@@ -19,10 +20,12 @@ public class SongDownloaderTask extends AsyncTask<Void, String, Void> implements
 	private InternetHttpConnection internetConnection;
 	private String url;
 	private Handler handler;
+	private AppManager manager;
 	
-	public SongDownloaderTask(Context ctx, Handler handler, String url) {
+	public SongDownloaderTask(Context ctx, AppManager manager, Handler handler, String url) {
 		this.url = url;
 		this.handler = handler;
+		this.manager = manager;
 		internetConnection = new InternetHttpConnection(this);
 	}
 	
@@ -36,7 +39,7 @@ public class SongDownloaderTask extends AsyncTask<Void, String, Void> implements
 		String exploded[] = StringHelpers.explode('/', url);
 		String name = exploded[exploded.length - 1];
 		
-		File songDir = new File(Environment.getExternalStorageDirectory() + "/.kidungjemaat/songfiles/");
+		File songDir = new File(Lagu.getSongDir(manager.getCurrentJenis()));
 		songDir.mkdirs();
 		
 		

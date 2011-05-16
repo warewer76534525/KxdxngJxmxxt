@@ -1,6 +1,5 @@
 package com.triplelands.kidungjemaat.activity;
 
-
 import com.triplelands.kidungjemaat.R;
 
 import android.app.Dialog;

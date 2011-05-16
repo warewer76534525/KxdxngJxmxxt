@@ -1,7 +1,17 @@
-
-    <RelativeLayout android:id="@+id/relativeLayout1" android:layout_width="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android" android:layout_height="wrap_content" android:paddingLeft="10dp" android:paddingRight="10dp" android:paddingTop="10dp">
-        <EditText android:layout_height="wrap_content" android:layout_width="100dip" android:hint="KJ No." android:id="@+id/txtNumber" android:numeric="integer"></EditText>
-        <FrameLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/frameButton" android:layout_toRightOf="@+id/txtNumber" android:padding="4dp">
-            <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Buka Lirik" android:id="@+id/btnGo" android:background="@drawable/button_teal"></Button>
-        </FrameLayout>
-    </RelativeLayout>
+<RelativeLayout android:id="@+id/relativeLayout1"
+	android:layout_width="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="wrap_content" android:paddingLeft="10dp"
+	android:paddingRight="10dp" android:paddingTop="10dp">
+	<Spinner android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:id="@+id/spJenis"
+		android:layout_alignParentLeft="true"></Spinner>
+	<EditText android:layout_height="wrap_content"
+		android:layout_width="100dip" android:id="@+id/txtNumber"
+		android:numeric="integer" android:layout_toRightOf="@+id/spJenis" android:hint="No."></EditText>
+	<FrameLayout android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:id="@+id/frameButton"
+		android:layout_toRightOf="@+id/txtNumber" android:padding="4dp">
+		<Button android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:id="@+id/btnGo" android:background="@drawable/button_teal" android:text="  Buka  "></Button>
+	</FrameLayout>
+</RelativeLayout>

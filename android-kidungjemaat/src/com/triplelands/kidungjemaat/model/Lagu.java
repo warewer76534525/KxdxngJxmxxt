@@ -3,9 +3,15 @@ package com.triplelands.kidungjemaat.model;
 import java.io.Serializable;
 import java.util.List;
 
+import android.os.Environment;
+
 @SuppressWarnings("serial")
 public class Lagu implements Serializable
 {
+	public static final int KJ = 0;
+	public static final int PKJ = 1;
+	public static final int NKB = 2;
+	
 	private String no;
 	private int jumlahAyat;
 	private String judul;
@@ -26,8 +32,8 @@ public class Lagu implements Serializable
 		return judul;
 	}
 	
-	public String getFullJudul(){
-		return ("KJ. " + no + " " + judul).toUpperCase();
+	public String getFullJudul(int jenis){
+		return (getCurrentJenisString(jenis) + ". " + no + " " + judul).toUpperCase();
 	}
 	
 	public static String getFullNumber(String num){
@@ -47,13 +53,23 @@ public class Lagu implements Serializable
 	}
 	
 	
-	public String getStringNumber(){
-		return "KJ - No. " + getFullNumber(no);
+	public String getStringNumber(int jenis){
+		return getCurrentJenisString(jenis) + " - No. " + getFullNumber(no);
 	}
 
 	public List<String> getListAyat() {
 		return listAyat;
 	}
 	
+	public static String getCurrentJenisString(int jenis){
+		if(jenis == KJ) return "KJ";
+		else if(jenis == PKJ) return "PKJ";
+		else return "NKB";
+	}
 	
+	public static String getSongDir(int jenis){
+		if(jenis == KJ) return Environment.getExternalStorageDirectory() + "/.kidungjemaat/songfiles/";
+		else if(jenis == PKJ) return Environment.getExternalStorageDirectory() + "/.kidungjemaat/songfiles/pkj/";
+		else return Environment.getExternalStorageDirectory() + "/.kidungjemaat/songfiles/nkb/";
+	}
 }

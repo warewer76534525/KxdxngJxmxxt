@@ -34,6 +34,7 @@ public class InternetHttpConnection {
 	}
 
 	public void setAndAccessURL(String urlString) {
+			Log.i("URL", urlString);
 			Log.i("tag", "akses mulai");
 //			while(isConnecting){
 				try {
